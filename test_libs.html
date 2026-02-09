@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lib Debug</title>
+    <script src="libs/react.js"></script>
+    <script src="libs/react-dom.js"></script>
+    <script src="libs/react-router-dom.js"></script>
+    <script src="libs/lucide.js"></script>
+    <script src="libs/lucide-react.js"></script>
+</head>
+
+<body>
+    <h1>Lib Debug</h1>
+    <pre id="output"></pre>
+    <script>
+        const output = document.getElementById('output');
+        function log(msg) {
+            output.innerText += msg + "\n";
+        }
+
+        log("React: " + (window.React ? "OK" : "MISSING"));
+        log("ReactDOM: " + (window.ReactDOM ? "OK" : "MISSING"));
+        log("ReactRouterDOM: " + (window.ReactRouterDOM ? "OK" : "MISSING"));
+
+        if (window.ReactRouterDOM) {
+            log("ReactRouterDOM Keys: " + Object.keys(window.ReactRouterDOM).join(", "));
+        }
+    </script>
+</body>
+
+</html>

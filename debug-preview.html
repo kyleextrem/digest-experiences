@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Preview - Newcastle Digest Experiences</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .debug-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #666;
+            font-size: 18px;
+            margin-top: 0;
+        }
+
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .error-msg {
+            color: #f48771;
+        }
+
+        .success-msg {
+            color: #4ec9b0;
+        }
+
+        .info-msg {
+            color: #9cdcfe;
+        }
+
+        button {
+            background: #0F0F0F;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Newcastle Digest Experiences - Debug Preview</h1>
+
+    <div class="debug-panel">
+        <h2>Library Status</h2>
+        <div id="library-status">Checking libraries...</div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Console Output</h2>
+        <div class="console-output" id="console-output">
+            <div class="info-msg">Initializing debug console...</div>
+        </div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Actions</h2>
+        <button onclick="openStandalone()">Open Standalone Preview</button>
+        <button onclick="checkLibraries()">Recheck Libraries</button>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Preview (Embedded)</h2>
+        <iframe id="preview-frame" src="standalone.html"></iframe>
+    </div>
+
+    <script>
+        const consoleOutput = document.getElementById('console-output');
+        const libraryStatus = document.getElementById('library-status');
+
+        // Capture console messages
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToConsole(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `${type}-msg`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function (...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'info');
+        };
+
+        console.error = function (...args) {
+            originalError.apply(console, args);
+            addToConsole('ERROR: ' + args.join(' '), 'error');
+        };
+
+        console.warn = function (...args) {
+            originalWarn.apply(console, args);
+            addToConsole('WARNING: ' + args.join(' '), 'info');
+        };
+
+        // Listen for iframe errors
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'error') {
+                addToConsole('IFRAME ERROR: ' + event.data.message, 'error');
+            }
+        });
+
+        function checkLibraries() {
+            const iframe = document.getElementById('preview-frame');
+            const iframeWindow = iframe.contentWindow;
+
+            const libraries = [
+                { name: 'React', check: () => iframeWindow.React },
+                { name: 'ReactDOM', check: () => iframeWindow.ReactDOM },
+                { name: 'ReactRouterDOM', check: () => iframeWindow.ReactRouterDOM || iframeWindow.ReactRouter },
+                { name: 'Lucide', check: () => iframeWindow.LucideReact || iframeWindow.lucideReact || iframeWindow['lucide-react'] },
+                { name: 'Babel', check: () => iframeWindow.Babel }
+            ];
+
+            let html = '<div style="font-family: monospace;">';
+            let allLoaded = true;
+
+            libraries.forEach(lib => {
+                const loaded = lib.check();
+                const status = loaded ?
+                    '<span class="status success">✓ Loaded</span>' :
+                    '<span class="status error">✗ Missing</span>';
+                html += `<div style="margin: 8px 0;">${lib.name}: ${status}</div>`;
+
+                if (!loaded) {
+                    allLoaded = false;
+                    addToConsole(`Library missing: ${lib.name}`, 'error');
+                } else {
+                    addToConsole(`Library loaded: ${lib.name}`, 'success');
+                }
+            });
+
+            html += '</div>';
+            libraryStatus.innerHTML = html;
+
+            if (allLoaded) {
+                addToConsole('All libraries loaded successfully!', 'success');
+            } else {
+                addToConsole('Some libraries are missing. Check the standalone.html file.', 'error');
+            }
+        }
+
+        function openStandalone() {
+            window.open('standalone.html', '_blank');
+            addToConsole('Opened standalone preview in new tab', 'info');
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = '<div class="info-msg">Console cleared</div>';
+        }
+
+        // Check libraries after iframe loads
+        document.getElementById('preview-frame').addEventListener('load', function () {
+            addToConsole('Preview iframe loaded', 'success');
+            setTimeout(checkLibraries, 1000);
+        });
+
+        // Initial check
+        addToConsole('Debug preview initialized', 'success');
+    </script>
+</body>
+
+</html>

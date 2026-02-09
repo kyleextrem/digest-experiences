@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newcastle Digest Experiences - PREVIEW</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React and ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- React Router DOM v5 - has proper UMD support -->
+  <script src="https://unpkg.com/react-router-dom@5.3.0/umd/react-router-dom.min.js"></script>
+  <!-- Lucide Icons - using the correct global variable -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              charcoal: '#0F0F0F',
+              paper: '#FAFAF8',
+              clay: '#F1EDE4',
+              ink: '#1A1A1A',
+              accent: '#EBE7DE',
+            }
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          letterSpacing: {
+            tightest: '-0.04em',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.8s ease-out forwards',
+            'slide-up': 'slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'reveal': 'reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+            reveal: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Film grain overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+  <script>
+    window.onerror = function (msg, url, line, col, error) {
+      document.body.innerHTML = '<div style="color:red; padding:20px; font-family:sans-serif;"><h1>Application Error</h1><p>' + msg + '</p><p>Line: ' + line + '</p></div>';
+      console.error("Global Error:", msg, error);
+      return false;
+    };
+  </script>
+</head>
+
+<body class="bg-brand-paper">
+  <div id="root"></div>
+  <script type="text/babel">
+    // Dependencies from global scope
+    const { useState, useEffect } = React;
+
+    // React Router DOM v5 API
+    const ReactRouterDOM = window.ReactRouterDOM;
+    if (!ReactRouterDOM) {
+      throw new Error("ReactRouterDOM not found. Please check internet connection or CDN.");
+    }
+    const { HashRouter, Switch, Route, Link, useLocation } = ReactRouterDOM;
+
+
+    // Lucide icons - the library exposes icons through window.lucide
+    const lucide = window.lucide;
+    if (!lucide) {
+      throw new Error("Lucide icons library not found. Check CDN connection.");
+    }
+
+    // Create icon components using lucide.createElement
+    const createIcon = (iconName) => {
+      return (props) => {
+        const iconElement = lucide.createElement(iconName);
+        return React.createElement('span', {
+          ...props,
+          dangerouslySetInnerHTML: { __html: iconElement.outerHTML }
+        });
+      };
+    };
+
+    const Menu = createIcon('Menu');
+    const X = createIcon('X');
+    const ArrowRight = createIcon('ArrowRight');
+    const ArrowUpRight = createIcon('ArrowUpRight');
+    const MoveUpRight = createIcon('MoveUpRight');
+    const Users = createIcon('Users');
+    const Calendar = createIcon('Calendar');
+    const Lock = createIcon('Lock');
+    const Plus = createIcon('Plus');
+    const Minus = createIcon('Minus');
+    const Heart = createIcon('Heart');
+    const MessageCircle = createIcon('MessageCircle');
+    const Mail = createIcon('Mail');
+
+    // --- types.ts ---
+
+    interface HostedEvent {
+      id: string;
+      title: string;
+      date: string;
+      location: string;
+      description: string;
+      price: string;
+      ticketLink: string;
+      imageUrl: string;
+    }
+
+    interface WaitlistSubmission {
+      firstName: string;
+      email: string;
+      suburb?: string;
+      notified: boolean;
+    }
+
+
+    // --- constants.tsx ---
+
+
+
+
+    const MOCK_EVENTS: HostedEvent[] = []; // Intentionally empty for now
+
+    const FAQ_DATA = [
+      {
+        question: 'Are these the same events listed in the weekly newsletter?',
+        answer: 'No. The newsletter lists many great things happening around the city. This site is exclusively for events hosted and run by the Newcastle Digest team personally.'
+      },
+      {
+        question: 'What do these events cost?',
+        answer: 'It depends. We host a mixture of free community meetups (like park pilates) and ticketed socials (like happy hours or dinners) where we need to cover venue or food costs.'
+      },
+      {
+        question: 'How does the Dinner Club work?',
+        answer: 'Dinner Club is our flagship small-group experience. You join the waitlist, and when we confirm a venue and date, we invite waitlist members to book. We curate the seating so you sit with like-minded locals.'
+      },
+      {
+        question: 'Can I come alone?',
+        answer: 'Absolutely. Most people do. Whether it’s a free meetup or a ticketed dinner, we handle the hosting so it never feels awkward to arrive solo.'
+      },
+      {
+        question: 'What is your refund policy?',
+        answer: 'For ticketed events, spots are usually non-refundable but are fully transferable. If you can\'t make it, you can pass your spot to a friend.'
+      }
+    ];
+
+
+    // --- components/ScrollToTop.tsx ---
+
+
+
+
+    const ScrollToTop = () => {
+      const { pathname } = useLocation();
+
+      useEffect(() => {
+        window.scrollTo(0, 0);
+      }, [pathname]);
+
+      return null;
+    };
+
+    // default ScrollToTop;
+
+
+    // --- pages/Home.tsx ---
+
+
+
+
+
+    const Home: React.FC = () => {
+      return (
+        <div className="pb-32 overflow-x-hidden">
+          {/* Editorial Hero */}
+          <section className="pt-20 md:pt-32 px-6 max-w-7xl mx-auto pb-20">
+            <div className="grid md:grid-cols-12 gap-16 md:gap-8 items-start">
+              <div className="md:col-span-9 leading-none">
+                <div className="flex items-center space-x-3 mb-10 overflow-hidden">
+                  <span className="h-[1px] w-12 bg-gray-200"></span>
+                  <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Curated Experiences</span>
+                </div>
+                <h1 className="text-7xl sm:text-8xl md:text-[140px] font-serif leading-[0.85] tracking-tightest mb-12 text-brand-charcoal">
+                  A slower way <br />
+                  <span className="serif-display text-gray-300">to connect.</span>
+                </h1>
+                <p className="text-2xl md:text-3xl text-gray-500 max-w-2xl leading-tight font-light text-balance mb-12">
+                  Simple community gatherings hosted by Newcastle Digest. Intentional moments built for our local community.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <Link
+                    to="/dinners"
+                    className="bg-brand-charcoal text-white px-8 py-5 rounded-full text-xs uppercase tracking-widest font-bold hover:scale-105 transition-transform active:scale-95 flex items-center shadow-lg shadow-black/5"
+                  >
+                    Join Dinner Club
+                    <ArrowRight size={14} className="ml-3" />
+                  </Link>
+                  <Link
+                    to="/events"
+                    className="border border-soft px-8 py-5 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-brand-clay transition-colors flex items-center"
+                  >
+                    Social Events
+                  </Link>
+                </div>
+              </div>
+
+              <div className="md:col-span-3 pt-12 md:pt-0 hidden md:block">
+                <div className="sticky top-40 space-y-12">
+                  <div className="space-y-4">
+                    <h4 className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">Next Table</h4>
+                    <p className="text-sm font-serif italic text-gray-500 max-w-[150px]">Waitlist members notified monthly.</p>
+                  </div>
+                  <div className="space-y-4 border-t border-soft pt-8">
+                    <h4 className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">Location</h4>
+                    <p className="text-sm font-serif italic text-gray-500">Newcastle, NSW</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Narrative Section */}
+          <section className="py-24 px-6 md:px-0 bg-brand-clay/20">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-12 lg:gap-24 items-center">
+              <div className="md:col-span-6 order-2 md:order-1">
+                <div className="p-8 md:p-20 bg-brand-paper shadow-2xl shadow-black/5 border border-soft relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-8">
+                    <MoveUpRight size={24} className="text-gray-200 group-hover:text-brand-charcoal transition-colors" />
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-serif leading-tight text-brand-charcoal mb-8 italic">
+                    "No pressure to be anyone other than yourself."
+                  </h2>
+                  <p className="text-gray-500 text-lg leading-relaxed font-light mb-8 max-w-sm">
+                    We host casual gatherings that actually feel like Newcastle. Small groups, local spots, and genuine interaction.
+                  </p>
+                  <div className="flex space-x-12 pt-8 border-t border-soft">
+                    <div className="space-y-1">
+                      <span className="text-2xl font-serif text-brand-charcoal">01</span>
+                      <p className="text-[9px] uppercase tracking-widest font-bold text-gray-400">Curation</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-2xl font-serif text-brand-charcoal">02</span>
+                      <p className="text-[9px] uppercase tracking-widest font-bold text-gray-400">Community</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="md:col-span-6 space-y-12 order-1 md:order-2">
+                <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block mb-4">The Philosophy</span>
+                <h2 className="text-5xl md:text-7xl font-serif tracking-tightest leading-[0.9] text-brand-charcoal">
+                  Meet locals, <br />
+                  <span className="serif-display text-gray-300">beyond the feed.</span>
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-12">
+                  <div className="space-y-4">
+                    <h3 className="font-bold text-sm uppercase tracking-tight">Intentionality</h3>
+                    <p className="text-gray-500 leading-relaxed font-light text-sm">
+                      Everything from the venue selection to the seating plan is thought through so you don't have to.
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="font-bold text-sm uppercase tracking-tight">Accessibility</h3>
+                    <p className="text-gray-500 leading-relaxed font-light text-sm">
+                      A mix of free and paid sessions. We believe connection shouldn't always have a paywall.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Feature Cards Grid */}
+          <section className="py-20 md:py-24 px-6 max-w-7xl mx-auto">
+            <div className="mb-20 flex flex-col md:flex-row justify-between items-end gap-8">
+              <div className="max-w-xl">
+                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400 mb-4 block">Select Experiences</span>
+                <h2 className="text-5xl md:text-6xl font-serif tracking-tightest leading-none text-brand-charcoal">Choose your path.</h2>
+              </div>
+              <p className="text-gray-400 font-serif italic max-w-xs text-right hidden md:block">
+                Limited capacity gatherings. Recommended for those new to town or looking for more depth.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
+              {/* Card 1: Dinner Club */}
+              <Link to="/dinners" className="group block space-y-10">
+                <div className="overflow-hidden aspect-[4/5] relative glass-panel border border-soft shadow-xl shadow-black/[0.02]">
+                  <img
+                    src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=1200"
+                    alt="Dinner table setting"
+                    className="w-full h-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-10 left-10 right-10 flex justify-between items-end">
+                    <div className="bg-brand-paper/95 backdrop-blur px-5 py-3 border border-soft">
+                      <span className="text-[10px] uppercase tracking-widest font-black text-brand-charcoal">Waitlist Only</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="text-5xl font-serif text-brand-charcoal group-hover:italic transition-all">Dinner Club</h3>
+                    <span className="h-[1px] flex-grow mx-8 bg-gray-100 hidden sm:block"></span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">01</span>
+                  </div>
+                  <p className="text-gray-500 max-w-sm text-lg font-light leading-relaxed">Small group curated dinners at Newcastle's premier local venues.</p>
+                </div>
+              </Link>
+
+              {/* Card 2: Events */}
+              <Link to="/events" className="group block space-y-10 md:mt-32">
+                <div className="overflow-hidden aspect-[4/5] relative glass-panel border border-soft shadow-xl shadow-black/[0.02]">
+                  <img
+                    src="./social-group.jpg"
+                    alt="Social gathering"
+                    className="w-full h-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-10 left-10 right-10">
+                    <div className="bg-brand-charcoal px-5 py-3 text-white inline-block">
+                      <span className="text-[10px] uppercase tracking-widest font-black">Free & Paid Sessions</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="text-5xl font-serif text-brand-charcoal group-hover:italic transition-all">Social Events</h3>
+                    <span className="h-[1px] flex-grow mx-8 bg-gray-100 hidden sm:block"></span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">02</span>
+                  </div>
+                  <p className="text-gray-500 max-w-sm text-lg font-light leading-relaxed">Casual catch-ups, park sessions, and boutique social activities.</p>
+                </div>
+              </Link>
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="py-40 px-6 border-t border-soft mt-32">
+            <div className="max-w-4xl mx-auto text-center space-y-12">
+              <h2 className="text-6xl md:text-8xl font-serif tracking-tightest leading-none text-brand-charcoal">
+                See you at <br />
+                <span className="serif-display text-gray-300">the next one.</span>
+              </h2>
+              <div className="flex justify-center flex-wrap gap-6 pt-8">
+                <Link
+                  to="/dinners"
+                  className="bg-brand-charcoal text-white px-10 py-6 rounded-full text-xs uppercase tracking-widest font-black shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
+                >
+                  Join Membership Waitlist
+                </Link>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    };
+
+    // default Home;
+
+
+    // --- pages/Dinners.tsx ---
+
+
+
+
+    const Dinners: React.FC = () => {
+      useEffect(() => {
+        // Inject HubSpot script
+        const script = document.createElement('script');
+        script.src = "https://js-ap1.hsforms.net/forms/embed/442301086.js";
+        script.defer = true;
+        document.body.appendChild(script);
+
+        return () => {
+          document.body.removeChild(script);
+        };
+      }, []);
+
+      return (
+        <div className="pb-32 px-6">
+          <div className="max-w-7xl mx-auto">
+            {/* New Header Layout with Hero Image */}
+            <header className="pt-20 md:pt-32 mb-24">
+              <div className="grid md:grid-cols-12 gap-12 items-end mb-16">
+                <div className="md:col-span-7">
+                  <div className="flex items-center space-x-3 mb-8 overflow-hidden">
+                    <span className="h-[1px] w-12 bg-gray-200"></span>
+                    <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Flagship Experience</span>
+                  </div>
+                  <h1 className="text-7xl md:text-[120px] font-serif tracking-tightest leading-[0.85] mb-8 text-brand-charcoal">
+                    The <br /><span className="serif-display text-gray-300 italic">Dinner Club</span>
+                  </h1>
+                  <p className="text-xl md:text-2xl text-gray-500 leading-tight font-light max-w-lg text-balance">
+                    Curated evenings at Newcastle’s most interesting venues. Small group dining for the curious and the connected.
+                  </p>
+                </div>
+                <div className="md:col-span-5 relative">
+                  <div className="aspect-[4/3] overflow-hidden bg-brand-clay/20 relative glass-panel border border-soft shadow-2xl shadow-black/[0.02]">
+                    <img
+                      src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1000"
+                      alt="Dinner Club Setting"
+                      className="w-full h-full object-cover grayscale-[0.2] contrast-[1.05]"
+                    />
+                    <div className="absolute bottom-6 right-6 bg-brand-paper/90 backdrop-blur px-4 py-2 border border-soft">
+                      <span className="text-[9px] uppercase tracking-widest font-black text-brand-charcoal">Waitlist Only</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div className="grid md:grid-cols-12 gap-12 lg:gap-24 items-start mb-32">
+              {/* Left Column: Process */}
+              <div className="md:col-span-5 space-y-20">
+                <div className="space-y-12">
+                  <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block border-b border-soft pb-4">The Format</span>
+                  <div className="space-y-12">
+                    {[
+                      { title: "The Registry", text: "Join the waitlist to receive private invitations. We release new dates monthly to early members." },
+                      { title: "The Invitation", text: "Receive a direct link to book your seat. No public tickets, ever." },
+                      { title: "The Curation", text: "A brief matching process ensures every table is matched for genuine connection." }
+                    ].map((step, idx) => (
+                      <div key={idx} className="group space-y-4">
+                        <div className="flex items-center space-x-4">
+                          <span className="text-2xl font-serif italic text-gray-200 group-hover:text-brand-charcoal transition-colors">0{idx + 1}</span>
+                          <h3 className="font-bold text-sm tracking-tight uppercase">{step.title}</h3>
+                        </div>
+                        <p className="text-gray-500 font-light leading-relaxed text-base max-w-xs">{step.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-10 border-l-2 border-brand-charcoal bg-brand-clay/10 italic font-serif text-xl text-brand-ink leading-snug">
+                  "Providing the structure & curation, so you can just provide the presence."
+                </div>
+              </div>
+
+              {/* Right Column: Integrated Form */}
+              <div className="md:col-span-7 sticky top-32">
+                <div className="bg-brand-paper border border-soft p-10 md:p-16 shadow-xl shadow-brand-charcoal/[0.03] relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-brand-charcoal"></div>
+
+                  <div className="mb-10 flex items-baseline justify-between">
+                    <div>
+                      <h3 className="text-4xl font-serif mb-2 italic text-brand-charcoal">Request Access</h3>
+                      <p className="text-gray-400 font-light text-sm">Invitations are released in sequential order.</p>
+                    </div>
+                    <Lock size={24} className="text-gray-200" />
+                  </div>
+
+                  {/* Form Container */}
+                  <div className="hs-form-frame w-full min-h-[400px]" data-region="ap1" data-form-id="49d841f3-2eaa-4e92-acf5-77c66c64ec93" data-portal-id="442301086"></div>
+
+                  <div className="mt-12 pt-8 border-t border-soft">
+                    <p className="text-[9px] uppercase tracking-widest font-bold text-gray-300 leading-relaxed">
+                      Privacy is paramount. Your registration grants you early access to private bookings across the Digest network.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // default Dinners;
+
+
+    // --- pages/Events.tsx ---
+
+
+
+
+    const Events: React.FC = () => {
+      return (
+        <div className="pb-32 px-6">
+          <div className="max-w-7xl mx-auto">
+            <header className="pt-20 md:pt-32 mb-20">
+              <div className="flex items-center space-x-3 mb-8 overflow-hidden">
+                <span className="h-[1px] w-12 bg-gray-200"></span>
+                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Social Calendar</span>
+              </div>
+              <div className="grid md:grid-cols-12 gap-16 items-end">
+                <div className="md:col-span-8">
+                  <h1 className="text-7xl md:text-[120px] font-serif tracking-tightest leading-[0.85] mb-8 text-brand-charcoal">
+                    Social <br /><span className="serif-display text-gray-300 italic">Activities</span>
+                  </h1>
+                  <p className="text-xl md:text-2xl text-gray-500 leading-tight font-light max-w-lg text-balance">
+                    A mixture of free community catch-ups and curated hosted sessions. Relaxed, local, and intentional.
+                  </p>
+                </div>
+                <div className="md:col-span-4 hidden md:block">
+                  <div className="flex justify-end">
+                    <div className="w-32 h-32 bg-brand-clay rounded-full flex items-center justify-center p-6 text-center shadow-inner">
+                      <span className="text-[9px] uppercase tracking-widest font-black text-brand-charcoal leading-tight">Monthly <br />Release</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <section className="grid md:grid-cols-12 gap-12 lg:gap-24 items-center mb-32 border-y border-soft py-20">
+              <div className="md:col-span-6 space-y-12 order-2 md:order-1">
+                <div className="space-y-8">
+                  <div className="inline-flex items-center space-x-2 bg-brand-charcoal text-white px-4 py-2 rounded-full">
+                    <Calendar size={12} />
+                    <span className="text-[9px] uppercase tracking-widest font-black">Release Cycle</span>
+                  </div>
+                  <h2 className="text-5xl md:text-6xl font-serif leading-tight text-brand-charcoal">Simple formats, <br />high connection.</h2>
+                  <p className="text-gray-500 font-light text-xl leading-relaxed max-w-md">
+                    From free Saturday morning meetups in the park to boutique Friday happy hours at our favorite local spots.
+                  </p>
+                  <p className="text-gray-400 font-serif italic text-lg leading-relaxed">
+                    "No high-production stress, just local people meeting up."
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <a
+                    href="https://events.humanitix.com/host/newcastle-digest"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-between bg-brand-charcoal text-white py-6 px-10 rounded-full group hover:scale-105 transition-all shadow-xl shadow-black/10"
+                  >
+                    <span className="font-bold text-xs uppercase tracking-widest mr-6">View on Humanitix</span>
+                    <ArrowUpRight size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </a>
+                </div>
+              </div>
+              <div className="md:col-span-6 order-1 md:order-2">
+                <div className="aspect-[4/5] bg-brand-paper overflow-hidden relative glass-panel border border-soft shadow-2xl shadow-black/[0.03]">
+                  <img
+                    src="./social-group.jpg"
+                    alt="Community group"
+                    className="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  <div className="absolute bottom-10 left-10">
+                    <div className="bg-white/95 backdrop-blur-md p-8 border border-soft shadow-xl max-w-[280px]">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <Users size={14} className="text-gray-300" />
+                        <span className="text-[9px] uppercase tracking-widest font-black text-gray-300">Digest Hosted</span>
+                      </div>
+                      <h4 className="text-2xl font-serif italic text-brand-charcoal mb-4 text-balance">Intentional Gatherings</h4>
+                      <p className="text-[10px] text-gray-400 font-medium leading-relaxed">WE HANDLE THE HOSTING SO IT NEVER FEELS AWKWARD TO ARRIVE SOLO.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="py-32 bg-brand-clay/[0.15] border border-soft text-center px-6 relative overflow-hidden">
+              <div className="absolute -top-24 -left-20 w-64 h-64 bg-brand-paper rounded-full opacity-50 blur-3xl"></div>
+              <div className="absolute -bottom-24 -right-20 w-64 h-64 bg-brand-paper rounded-full opacity-50 blur-3xl"></div>
+
+              <div className="relative z-10 max-w-2xl mx-auto space-y-10">
+                <h3 className="text-5xl md:text-6xl font-serif italic text-brand-charcoal tracking-tightest">Stay in the loop.</h3>
+                <p className="text-gray-500 text-lg md:text-xl font-light leading-relaxed">
+                  New dates are released first via our weekly newsletter. Don't miss the next lock-in.
+                </p>
+                <div className="w-full max-w-md mx-auto pt-4">
+                  <div className="bg-white p-2 rounded-full border border-soft shadow-sm flex items-center">
+                    <iframe
+                      src="https://embeds.beehiiv.com/e1030bd0-e867-42b4-b64e-c3b75defc0d9?slim=true"
+                      data-test-id="beehiiv-embed"
+                      height="52"
+                      frameBorder="0"
+                      scrolling="no"
+                      style={{ margin: 0, borderRadius: 0, backgroundColor: 'transparent', width: '100%' }}
+                      title="Newsletter Subscription"
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      );
+    };
+
+    // default Events;
+
+
+    // --- pages/FAQ.tsx ---
+
+
+
+
+
+    const FAQ: React.FC = () => {
+      const [openIndex, setOpenIndex] = useState < number | null > (0);
+
+      return (
+        <div className="pb-32 px-6">
+          <div className="max-w-4xl mx-auto">
+            <header className="pt-24 md:pt-40 mb-32 text-center">
+              <div className="flex justify-center items-center space-x-3 mb-10 overflow-hidden">
+                <span className="h-[1px] w-12 bg-gray-200"></span>
+                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Assistance</span>
+                <span className="h-[1px] w-12 bg-gray-200"></span>
+              </div>
+              <h1 className="text-6xl md:text-8xl font-serif tracking-tightest leading-none mb-10 text-brand-charcoal">
+                Frequently <br /><span className="serif-display text-gray-300 italic">Asked</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-500 leading-snug font-light max-w-xl mx-auto text-balance">
+                Everything you need to know about our hosted experiences and the membership process.
+              </p>
+            </header>
+
+            <div className="space-y-6 max-w-3xl mx-auto">
+              {FAQ_DATA.map((item, index) => (
+                <div
+                  key={index}
+                  className={`border-b border-soft transition-all duration-500 overflow-hidden ${openIndex === index ? 'pb-10' : 'pb-6'
+                    }`}
+                >
+                  <button
+                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                    className="w-full text-left py-4 flex items-center justify-between group"
+                  >
+                    <span className={`text-xl md:text-2xl font-serif transition-all duration-500 ${openIndex === index ? 'text-brand-charcoal italic' : 'text-gray-400 group-hover:text-brand-charcoal'}`}>
+                      {item.question}
+                    </span>
+                    <div className={`transition-transform duration-500 ${openIndex === index ? 'rotate-45' : 'rotate-0'}`}>
+                      <Plus size={20} className={openIndex === index ? 'text-brand-charcoal' : 'text-gray-300'} />
+                    </div>
+                  </button>
+                  <div
+                    className={`transition-all duration-700 ease-in-out overflow-hidden ${openIndex === index ? 'max-h-[500px] opacity-100 mt-6' : 'max-h-0 opacity-0'
+                      }`}
+                  >
+                    <p className="text-gray-500 leading-relaxed text-lg font-light max-w-2xl">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-40 p-12 md:p-24 bg-brand-charcoal rounded-[40px] text-center text-white relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.1),transparent)] pointer-events-none"></div>
+              <div className="relative z-10 space-y-8">
+                <h3 className="text-4xl md:text-6xl font-serif italic tracking-tightest">Still curious?</h3>
+                <p className="text-white/40 text-lg md:text-xl font-light max-w-lg mx-auto leading-relaxed">
+                  If you have a specific question about an upcoming event, our team is here to help.
+                </p>
+                <div className="pt-8">
+                  <a href="mailto:events@newcastledigest.com" className="inline-block border border-white/20 px-12 py-5 rounded-full hover:bg-white hover:text-brand-charcoal transition-all font-bold text-xs uppercase tracking-widest shadow-2xl">
+                    Email the team
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // default FAQ;
+
+
+    // --- pages/Contact.tsx ---
+
+
+
+
+    const Contact: React.FC = () => {
+      return (
+        <div className="pb-32 px-6">
+          <div className="max-w-5xl mx-auto">
+            <header className="pt-24 md:pt-40 mb-32">
+              <div className="flex items-center space-x-3 mb-10 overflow-hidden">
+                <span className="h-[1px] w-12 bg-gray-200"></span>
+                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Communication</span>
+              </div>
+              <h1 className="text-7xl md:text-[140px] font-serif tracking-tightest leading-[0.8] mb-12 text-brand-charcoal">
+                Get in <br /><span className="serif-display text-gray-300 italic">touch.</span>
+              </h1>
+              <p className="text-2xl md:text-3xl text-gray-500 leading-tight font-light max-w-xl text-balance">
+                Have a question about a specific event or interested in a collaboration? Our studio is open for local conversation.
+              </p>
+            </header>
+
+            <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
+              <div className="group bg-brand-clay/[0.15] border border-soft p-12 md:p-16 space-y-8 hover:bg-brand-clay/30 transition-all duration-500">
+                <div className="w-16 h-16 glass-panel rounded-full flex items-center justify-center text-brand-charcoal mb-8 shadow-sm">
+                  <Mail size={24} />
+                </div>
+                <div className="space-y-4">
+                  <h2 className="text-3xl font-serif italic text-brand-charcoal tracking-tight">General Enquiries</h2>
+                  <p className="text-gray-500 text-lg font-light leading-relaxed">For questions regarding waitlists, ticketing, or upcoming hosted dates.</p>
+                </div>
+                <a
+                  href="mailto:experiences@newcastledigest.com"
+                  className="inline-flex items-center text-brand-charcoal font-bold text-xs uppercase tracking-widest border-b border-brand-charcoal pb-1 group-hover:pr-4 transition-all"
+                >
+                  Email Experience Team
+                  <ArrowRight size={14} className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </div>
+
+              <div className="group bg-brand-paper border border-soft p-12 md:p-16 space-y-8 hover:border-brand-charcoal transition-all duration-500 shadow-2xl shadow-black/[0.01]">
+                <div className="w-16 h-16 glass-panel rounded-full flex items-center justify-center text-brand-charcoal mb-8 shadow-sm">
+                  <MessageCircle size={24} />
+                </div>
+                <div className="space-y-4">
+                  <h2 className="text-3xl font-serif italic text-brand-charcoal tracking-tight">Partnerships</h2>
+                  <p className="text-gray-500 text-lg font-light leading-relaxed">Own a local venue or business? Let’s talk about building something for the community.</p>
+                </div>
+                <a
+                  href="mailto:partnerships@newcastledigest.com"
+                  className="inline-flex items-center text-brand-charcoal font-bold text-xs uppercase tracking-widest border-b border-brand-charcoal pb-1 group-hover:pr-4 transition-all"
+                >
+                  Email Partnership Team
+                  <ArrowRight size={14} className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // default Contact;
+
+
+    // --- pages/Privacy.tsx ---
+
+
+
+    const Privacy: React.FC = () => {
+      return (
+        <div className="pb-32 px-6">
+          <div className="max-w-3xl mx-auto">
+            <header className="pt-24 md:pt-40 mb-32">
+              <div className="flex items-center space-x-3 mb-10 overflow-hidden">
+                <span className="h-[1px] w-12 bg-gray-200"></span>
+                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Legal</span>
+              </div>
+              <h1 className="text-6xl md:text-8xl font-serif tracking-tightest leading-[0.8] mb-12 text-brand-charcoal">
+                Privacy <br /><span className="serif-display text-gray-300 italic">Policy.</span>
+              </h1>
+            </header>
+
+            <div className="prose prose-gray max-w-none space-y-16 text-gray-500 font-light text-lg leading-relaxed">
+              <section className="space-y-6">
+                <h2 className="text-2xl font-serif italic text-brand-charcoal tracking-tight">Data Collection</h2>
+                <p>
+                  We collect your name, email address, and (optionally) your suburb when you join our waitlist. This information is used exclusively to notify you of upcoming Newcastle Digest Experiences.
+                </p>
+              </section>
+
+              <section className="space-y-6">
+                <h2 className="text-2xl font-serif italic text-brand-charcoal tracking-tight">Data Usage</h2>
+                <p>
+                  We do not sell, rent, or trade your personal information. Your email address is stored securely via our mailing list provider (Beehiiv) and is used only for the purpose for which you provided it.
+                </p>
+              </section>
+
+              <section className="space-y-6">
+                <h2 className="text-2xl font-serif italic text-brand-charcoal tracking-tight">Event Matching</h2>
+                <p>
+                  Matching questions asked for Dinner Club events are used only to curate seating charts. This data is not stored in our general marketing database and is deleted after the event concludes.
+                </p>
+              </section>
+
+              <section className="space-y-6">
+                <h2 className="text-2xl font-serif italic text-brand-charcoal tracking-tight">Third Parties</h2>
+                <p>
+                  We use Humanitix for ticket processing. Their privacy policy applies to information provided during the checkout process.
+                </p>
+              </section>
+
+              <section className="pt-16 border-t border-soft">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-gray-300">Last updated: May 2024</p>
+              </section>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // default Privacy;
+
+
+    // --- pages/Thanks.tsx ---
+
+
+
+
+
+    const Thanks: React.FC = () => {
+      return (
+        <div className="min-h-[80vh] flex items-center justify-center px-6">
+          <div className="max-w-2xl w-full text-center space-y-12">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full glass-panel shadow-sm text-brand-charcoal mb-4 reveal-img">
+              <Heart size={32} fill="currentColor" className="opacity-10" />
+              <Heart size={32} className="absolute" />
+            </div>
+
+            <div className="space-y-6">
+              <h1 className="text-6xl md:text-8xl font-serif italic text-brand-charcoal tracking-tightest">Thank you.</h1>
+              <p className="text-xl md:text-2xl text-gray-500 font-light leading-relaxed max-w-lg mx-auto text-balance">
+                You're officially on the registry. We'll send you a private link as soon as our next table is set.
+              </p>
+            </div>
+
+            <div className="pt-8 space-y-10">
+              <Link
+                to="/"
+                className="inline-flex items-center bg-brand-charcoal text-white px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-black/10"
+              >
+                <span>Return to Studio</span>
+                <ArrowRight size={14} className="ml-3" />
+              </Link>
+
+              <div className="pt-10 border-t border-soft">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-gray-300">
+                  EXPLORING NEWCASTLE? <a href="https://newcastledigest.com" target="_blank" rel="noopener noreferrer" className="text-brand-charcoal underline underline-offset-4 decoration-gray-200 hover:decoration-brand-charcoal transition-all">VISIT THE DIGEST</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // default Thanks;
+
+
+    // --- components/Layout.tsx ---
+
+
+
+
+
+    const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      const [scrolled, setScrolled] = useState(false);
+      const location = useLocation();
+
+      useEffect(() => {
+        const handleScroll = () => {
+          setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const navLinks = [
+        { name: 'Dinner Club', path: '/dinners' },
+        { name: 'Social Events', path: '/events' },
+        { name: 'FAQ', path: '/faq' },
+      ];
+
+      const isActive = (path: string) => location.pathname === path;
+
+      return (
+        <div className="flex flex-col min-h-screen font-sans text-brand-charcoal selection:bg-brand-charcoal selection:text-brand-paper">
+          {/* Navigation */}
+          <nav
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out px-6 pt-6 ${scrolled ? 'translate-y-[-10px]' : 'translate-y-0'
+              }`}
+          >
+            <div className={`max-w-5xl mx-auto transition-all duration-500 ${scrolled ? 'glass-panel rounded-full px-8 py-3 shadow-sm' : 'py-4'
+              }`}>
+              <div className="flex justify-between items-center">
+                <Link to="/" className="flex flex-col group">
+                  <span className="text-sm font-bold tracking-tightest uppercase leading-none group-hover:italic transition-all">Newcastle Digest</span>
+                  <span className="serif-display text-[10px] italic text-gray-400 opacity-80">Experiences</span>
+                </Link>
+
+                {/* Desktop Nav */}
+                <div className="hidden md:flex items-center space-x-10">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`text-[10px] uppercase tracking-widest font-semibold transition-all hover:text-brand-charcoal editorial-link ${isActive(link.path) ? 'text-brand-charcoal' : 'text-gray-400'
+                        }`}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                  <Link
+                    to="/dinners"
+                    className="bg-brand-charcoal text-white px-5 py-2.5 rounded-full text-[10px] uppercase tracking-widest font-bold hover:scale-105 transition-transform active:scale-95"
+                  >
+                    Join Waitlist
+                  </Link>
+                </div>
+
+                {/* Mobile menu button */}
+                <div className="md:hidden">
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="p-1 hover:opacity-60 transition-opacity"
+                    aria-label="Toggle menu"
+                  >
+                    {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Nav Overlay */}
+            {isMenuOpen && (
+              <div className="fixed inset-0 z-40 bg-brand-paper p-8 flex flex-col justify-center space-y-12 animate-fade-in">
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="absolute top-10 right-8 p-1"
+                >
+                  <X size={24} />
+                </button>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className="text-5xl font-serif tracking-tightest hover:italic text-brand-charcoal"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+                <Link
+                  to="/dinners"
+                  className="inline-block w-fit bg-brand-charcoal text-brand-paper px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Join Waitlist
+                </Link>
+              </div>
+            )}
+          </nav>
+
+          <main className="flex-grow pt-32 animate-fade-in">
+            <div className="reveal-container">
+              <div className="reveal-item">
+                {children}
+              </div>
+            </div>
+          </main>
+
+          {/* Studio Footer */}
+          <footer className="bg-brand-paper px-6 pt-40 pb-12 border-t border-soft">
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
+                <div className="md:col-span-5 space-y-8">
+                  <div className="flex flex-col">
+                    <span className="text-3xl font-bold tracking-tightest uppercase leading-none">Newcastle Digest</span>
+                    <span className="serif-display text-xl italic text-gray-400 mt-1">Experiences</span>
+                  </div>
+                  <p className="text-gray-500 text-lg font-light leading-relaxed max-w-sm text-balance">
+                    Curation of moments. Small gatherings hosted by the team behind Newcastle's local journal.
+                  </p>
+                </div>
+
+                <div className="md:col-span-2 md:col-start-7">
+                  <h4 className="text-[9px] uppercase tracking-widest font-black text-gray-300 mb-8">Experiences</h4>
+                  <ul className="space-y-4">
+                    <li><Link to="/dinners" className="text-sm font-medium hover:italic transition-all">Dinner Club</Link></li>
+                    <li><Link to="/events" className="text-sm font-medium hover:italic transition-all">Social Events</Link></li>
+                    <li><Link to="/faq" className="text-sm font-medium hover:italic transition-all">Help & FAQ</Link></li>
+                  </ul>
+                </div>
+
+                <div className="md:col-span-2">
+                  <h4 className="text-[9px] uppercase tracking-widest font-black text-gray-300 mb-8">Newsletter</h4>
+                  <ul className="space-y-4">
+                    <li><a href="https://newcastledigest.beehiiv.com/" target="_blank" className="text-sm font-medium hover:italic transition-all">Main Feed</a></li>
+                    <li><Link to="/contact" className="text-sm font-medium hover:italic transition-all">Contact Us</Link></li>
+                    <li><Link to="/privacy" className="text-sm font-medium hover:italic transition-all">Privacy</Link></li>
+                  </ul>
+                </div>
+
+                <div className="md:col-span-2">
+                  <h4 className="text-[9px] uppercase tracking-widest font-black text-gray-300 mb-8">Social</h4>
+                  <ul className="space-y-4">
+                    <li><a href="#" className="text-sm font-medium hover:italic transition-all">Instagram</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="pt-12 border-t border-soft flex flex-col md:flex-row justify-between items-center gap-6">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">&copy; {new Date().getFullYear()} Newcastle Digest Studio</span>
+                <div className="flex items-center space-x-4">
+                  <span className="serif-display text-sm font-normal text-gray-300">Newcastle Powered</span>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </div>
+      );
+    };
+
+    // default Layout;
+
+
+    // --- App.tsx ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const App: React.FC = () => {
+      return (
+        <HashRouter>
+          <ScrollToTop />
+          <Layout>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/dinners" component={Dinners} />
+              <Route path="/events" component={Events} />
+              <Route path="/faq" component={FAQ} />
+              <Route path="/contact" component={Contact} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/thanks" component={Thanks} />
+            </Switch>
+          </Layout>
+        </HashRouter>
+      );
+    };
+
+    // default App;
+
+
+    // Mount the App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  </script>
+</body>
+
+</html>

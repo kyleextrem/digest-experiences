@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newcastle Digest Experiences | Hosted Events & Dinners</title>
+  <meta name="description" content="Small, intentional events run by the team behind Newcastle Digest. Join the Dinner Club waitlist or see upcoming hosted events.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Instrument Serif"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              charcoal: '#0F0F0F',
+              paper: '#FAFAF8',
+              clay: '#F1EDE4',
+              ink: '#1A1A1A',
+              accent: '#EBE7DE',
+            }
+          },
+          letterSpacing: {
+            tighter: '-0.04em',
+            tightest: '-0.07em',
+            widest: '0.25em',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.8s ease-out forwards',
+            'slide-up': 'slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'reveal': 'reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+            reveal: {
+              '0%': { transform: 'translateY(100%)' },
+              '100%': { transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAFAF8;
+      color: #0F0F0F;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+    
+    /* Reveal Animation Utility */
+    .reveal-container {
+      overflow: hidden;
+    }
+    .reveal-item {
+      animation: reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+    }
+
+    /* Custom Selection */
+    ::selection {
+      background: #0F0F0F;
+      color: #FAFAF8;
+    }
+
+    /* Minimal Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAFAF8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0F0F0F;
+    }
+
+    .serif-display {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+    }
+
+    .text-balance {
+      text-wrap: balance;
+    }
+  </style>
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@19.2.4/",
+    "react/": "https://esm.sh/react@19.2.4/",
+    "react-router-dom": "https://esm.sh/react-router-dom@7.13.0?deps=react@19.2.4",
+    "lucide-react": "https://esm.sh/lucide-react@0.563.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="./assets/index-DGHsXBGu.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CkIw5lXV.css">
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>

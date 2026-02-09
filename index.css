@@ -1,0 +1,68 @@
+
+/* Custom Cursor (Optional but adds premium feel) */
+.custom-cursor {
+  width: 8px;
+  height: 8px;
+  background: #0F0F0F;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease;
+}
+
+/* Glassmorphism Refinement */
+.glass-panel {
+  background: rgba(250, 250, 248, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(15, 15, 15, 0.05);
+}
+
+/* Smooth Image Reveal */
+.image-reveal {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-reveal::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #F1EDE4;
+  transform: translateY(0);
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.image-reveal.visible::after {
+  transform: translateY(-100%);
+}
+
+/* Editorial Underline */
+.editorial-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.editorial-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.editorial-link:hover::after {
+  width: 100%;
+}
+
+/* Border Thin */
+.border-soft {
+  border-color: rgba(15, 15, 15, 0.06);
+}
