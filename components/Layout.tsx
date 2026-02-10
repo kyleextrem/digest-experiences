@@ -55,7 +55,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </Link>
               ))}
               <Link
-                to="/dinners"
+                to="/dinners#request-access"
                 className="bg-brand-charcoal text-white px-5 py-2.5 rounded-full text-[10px] uppercase tracking-widest font-bold hover:scale-105 transition-transform active:scale-95"
               >
                 Join Waitlist
@@ -76,7 +76,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </div>
 
         {/* Mobile Nav Overlay */}
-        {isMenuOpen && (
+            {isMenuOpen && (
           <div className="fixed inset-0 z-40 bg-brand-paper p-8 flex flex-col justify-center space-y-12 animate-fade-in">
             <button 
               onClick={() => setIsMenuOpen(false)}
@@ -95,7 +95,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </Link>
             ))}
             <Link
-              to="/dinners"
+              to="/dinners#request-access"
               className="inline-block w-fit bg-brand-charcoal text-brand-paper px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -154,10 +154,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </div>
 
           <div className="pt-12 border-t border-soft flex flex-col md:flex-row justify-between items-center gap-6">
-            <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">&copy; {new Date().getFullYear()} Newcastle Digest Studio</span>
-            <div className="flex items-center space-x-4">
-              <span className="serif-display text-sm font-normal text-gray-300">Newcastle Powered</span>
-            </div>
+            <span className="text-[10px] uppercase tracking-widest font-bold text-gray-400">&copy; {new Date().getFullYear()} Newcastle Digest Experiences</span>
+            <a href="https://digeststudio.com" target="_blank" rel="noopener noreferrer" className="serif-display text-sm font-normal text-gray-400 hover:text-brand-charcoal transition-colors">Built by Digest Studio</a>
           </div>
         </div>
       </footer>
