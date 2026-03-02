@@ -10,6 +10,7 @@ import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Thanks from './pages/Thanks';
+import DinnerClubApril9 from './pages/DinnerClubApril9';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dinners" element={<Dinners />} />
+          <Route path="/dinner-club/april-9" element={<DinnerClubApril9 />} />
           <Route path="/events" element={<Events />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />

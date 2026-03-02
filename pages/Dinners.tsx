@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Lock, Plus } from 'lucide-react';
 import { FAQ_DATA } from '../constants';
 
@@ -62,6 +63,24 @@ const Dinners: React.FC = () => {
             </div>
           </div>
         </header>
+
+        {/* First Dinner Club – 9 April */}
+        <Link
+          to="/dinner-club/april-9"
+          className="block mb-24 p-8 md:p-10 bg-brand-charcoal text-white rounded-2xl group hover:bg-brand-ink transition-colors shadow-xl shadow-black/10"
+        >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-widest font-black text-white/60 mb-2 block">First Dinner Club</span>
+              <h2 className="text-3xl md:text-4xl font-serif tracking-tight italic mb-2">9 April · Parry Street Garage</h2>
+              <p className="text-white/80 font-light text-sm md:text-base">Limited to first 30 people. Book your seat.</p>
+            </div>
+            <span className="inline-flex items-center font-bold text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+              Book your seat
+              <ArrowRight size={16} className="ml-2" />
+            </span>
+          </div>
+        </Link>
 
         <div className="grid md:grid-cols-12 gap-12 lg:gap-24 items-start mb-32">
           {/* Left Column: Process */}
