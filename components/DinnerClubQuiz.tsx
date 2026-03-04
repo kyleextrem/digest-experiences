@@ -32,7 +32,7 @@ const HUMANITIX_URL = 'https://events.humanitix.com/newcastle-digest-dinner-club
 const API = '/api/dinner-club';
 
 export const DinnerClubQuiz: React.FC = () => {
-  const [step, setStep] = useState<'unlock' | 'quiz'>('unlock');
+  const [step, setStep] = useState<'unlock' | 'quiz' | 'confirmation'>('unlock');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [emojiSearch, setEmojiSearch] = useState('');
@@ -104,7 +104,8 @@ export const DinnerClubQuiz: React.FC = () => {
         return;
       }
       if (data?.success) {
-        window.location.href = HUMANITIX_URL;
+        setStep('confirmation');
+        setSubmitting(false);
         return;
       }
       setSubmitError(typeof data?.error === 'string' ? data.error : "We couldn't complete your registration. You can book directly at the link below.");
@@ -125,6 +126,29 @@ export const DinnerClubQuiz: React.FC = () => {
     setAnswers((prev) => ({ ...prev, _name: name, _email: email, _phone: unlockPhone.trim() }));
     setStep('quiz');
   };
+
+  // Confirmation: after successful submit, before Humanitix redirect
+  if (step === 'confirmation') {
+    return (
+      <div className="bg-brand-paper border border-soft rounded-2xl p-10 md:p-14 text-center shadow-xl shadow-black/[0.02] animate-fade-in">
+        <span className="text-[10px] uppercase tracking-widest font-black text-gray-400 block mb-4">Dinner Club</span>
+        <h2 className="text-3xl md:text-4xl font-serif italic text-brand-charcoal mb-4">
+          You're all done — now let's secure your seat.
+        </h2>
+        <p className="text-gray-500 font-light text-lg max-w-md mx-auto leading-relaxed mb-8">
+          You'll be taken to Humanitix to complete your booking and secure your spot at the table.
+        </p>
+        <button
+          type="button"
+          onClick={() => { window.location.href = HUMANITIX_URL; }}
+          className="w-full md:w-auto bg-brand-charcoal text-white px-10 py-4 rounded-full text-xs uppercase tracking-widest font-bold hover:scale-105 transition-transform"
+        >
+          Secure My Seat
+        </button>
+        <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mt-10 pt-6 border-t border-soft">Newcastle Digest Dinner Club</p>
+      </div>
+    );
+  }
 
   // Step 1: Enter email to unlock questions (or sold out)
   if (step === 'unlock') {
