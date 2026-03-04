@@ -56,7 +56,7 @@ const DinnerClubApril9: React.FC = () => {
                 <div>
                   <h3 className="text-[10px] uppercase tracking-widest font-black text-gray-400 mb-1">What’s included</h3>
                   <p className="text-gray-500 font-light text-sm leading-relaxed">
-                    Your booking secures a seat at the table, plus an optional invite to after-dinner drinks. You’ll pay for your own food and drinks at the venue. Booking fee $15.99 per person.
+                    Your booking secures a seat at the table, plus an optional invite to after-dinner drinks. You’ll pay for your own food and drinks at the venue. Booking fee $15 per person.
                   </p>
                 </div>
               </div>

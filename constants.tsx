@@ -35,7 +35,7 @@ export const FAQ_DATA: FAQItem[] = [
   },
   {
     question: 'How much does the dinner club cost?',
-    answer: "The booking fee is $15.99 per person, per dinner. You'll cover your own food and drinks at the restaurant.",
+    answer: "The booking fee is $15 per person, per dinner. You'll cover your own food and drinks at the restaurant.",
     category: 'dinner-club'
   },
   {
