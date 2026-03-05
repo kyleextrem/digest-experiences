@@ -1,4 +1,4 @@
-const MAX_SIGNUPS = 28;
+const MAX_SIGNUPS = 30;
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

@@ -1,7 +1,7 @@
 const BASE_ID = process.env.AIRTABLE_BASE_ID!;
 const TABLE = process.env.AIRTABLE_TABLE_NAME ?? 'Signups';
 const TOKEN = process.env.AIRTABLE_API_KEY!;
-const CAP = 28;
+const CAP = 30;
 
 export async function GET() {
   if (!BASE_ID || !TOKEN) {

@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Users, ArrowRight, Utensils } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowRight, Utensils, Plus } from 'lucide-react';
 import DinnerClubQuiz from '../components/DinnerClubQuiz';
+import { FAQ_DATA } from '../constants';
+
+const DINNER_CLUB_FAQS = FAQ_DATA.filter((item) => item.category === 'dinner-club');
 
 const DinnerClubApril9: React.FC = () => {
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   return (
     <div className="pb-32 px-6 overflow-x-hidden">
       <div className="max-w-4xl mx-auto">
@@ -19,9 +23,17 @@ const DinnerClubApril9: React.FC = () => {
           <p className="text-2xl md:text-3xl text-gray-500 font-light leading-tight mb-10 text-balance">
             Wednesday 9 April · Newcastle
           </p>
-          <div className="inline-flex items-center gap-2 bg-brand-charcoal text-white px-5 py-2.5 rounded-full">
-            <Users size={14} />
-            <span className="text-[10px] uppercase tracking-widest font-black">Limited to first 30 people</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="inline-flex items-center gap-2 bg-brand-charcoal text-white px-5 py-2.5 rounded-full">
+              <Users size={14} />
+              <span className="text-[10px] uppercase tracking-widest font-black">Limited to first 30 people</span>
+            </div>
+            <a
+              href="#personality-quiz"
+              className="inline-flex items-center gap-2 bg-brand-charcoal text-white px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:scale-105 transition-transform"
+            >
+              Book your seat →
+            </a>
           </div>
         </header>
 
@@ -68,9 +80,23 @@ const DinnerClubApril9: React.FC = () => {
                 className="w-full h-full object-cover object-center"
               />
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-brand-charcoal/80 to-transparent text-white">
-                <span className="text-[10px] uppercase tracking-widest font-black">First 28 only</span>
+                <span className="text-[10px] uppercase tracking-widest font-black">First 30 only</span>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Personality quiz – Step 1 to book */}
+        <section id="personality-quiz" className="scroll-mt-32 mb-24">
+          <div className="border-t border-soft pt-16">
+            <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block mb-4">Step 1</span>
+            <h2 className="text-4xl md:text-5xl font-serif tracking-tightest text-brand-charcoal mb-4">
+              Quick <span className="serif-display italic text-gray-300">personality quiz</span>
+            </h2>
+            <p className="text-gray-500 font-light text-lg max-w-xl mb-10">
+              So we can curate the table. Your answers won't be shared publicly.
+            </p>
+            <DinnerClubQuiz />
           </div>
         </section>
 
@@ -105,17 +131,38 @@ const DinnerClubApril9: React.FC = () => {
           </div>
         </section>
 
-        {/* Personality quiz – placeholder for your quiz */}
-        <section id="personality-quiz" className="scroll-mt-32 mb-24">
+        {/* Dinner Club FAQs */}
+        <section className="mb-24">
           <div className="border-t border-soft pt-16">
-            <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block mb-4">Step 1</span>
-            <h2 className="text-4xl md:text-5xl font-serif tracking-tightest text-brand-charcoal mb-4">
-              Quick <span className="serif-display italic text-gray-300">personality quiz</span>
-            </h2>
-            <p className="text-gray-500 font-light text-lg max-w-xl mb-10">
-              So we can curate the table. Your answers won't be shared publicly.
-            </p>
-            <DinnerClubQuiz />
+            <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block mb-4">Dinner Club FAQ</span>
+            <div className="space-y-0">
+              {DINNER_CLUB_FAQS.map((item, index) => (
+                <div
+                  key={index}
+                  className={`border-b border-soft transition-all duration-500 overflow-hidden ${openFaqIndex === index ? 'pb-6' : 'pb-4'}`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                    className="w-full text-left py-3 flex items-center justify-between group"
+                  >
+                    <span className={`text-base font-serif transition-all duration-500 ${openFaqIndex === index ? 'text-brand-charcoal italic' : 'text-gray-500 group-hover:text-brand-charcoal'}`}>
+                      {item.question}
+                    </span>
+                    <div className={`transition-transform duration-500 flex-shrink-0 ml-4 ${openFaqIndex === index ? 'rotate-45' : 'rotate-0'}`}>
+                      <Plus size={18} className={openFaqIndex === index ? 'text-brand-charcoal' : 'text-gray-300'} />
+                    </div>
+                  </button>
+                  <div
+                    className={`transition-all duration-700 ease-in-out overflow-hidden ${openFaqIndex === index ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'}`}
+                  >
+                    <p className="text-gray-500 leading-relaxed text-sm font-light max-w-md pt-2">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
