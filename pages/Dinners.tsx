@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight, Lock, Plus } from 'lucide-react';
 import { FAQ_DATA } from '../constants';
 
@@ -12,7 +11,7 @@ const Dinners: React.FC = () => {
   useEffect(() => {
     // Inject HubSpot script
     const script = document.createElement('script');
-    script.src = "https://js-ap1.hsforms.net/forms/embed/442301086.js";
+    script.src = 'https://js-ap1.hsforms.net/forms/embed/442301086.js';
     script.defer = true;
     document.body.appendChild(script);
 
@@ -24,28 +23,27 @@ const Dinners: React.FC = () => {
   return (
     <div className="pb-32 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* New Header Layout with Hero Image */}
         <header className="pt-20 md:pt-32 mb-24">
           <div className="grid md:grid-cols-12 gap-12 items-end mb-16">
             <div className="md:col-span-7">
               <div className="flex items-center space-x-3 mb-8 overflow-hidden">
-                <span className="h-[1px] w-12 bg-gray-200"></span>
-                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Flagship Experience</span>
+                <span className="h-[1px] w-12 bg-gray-200" />
+                <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Experiences</span>
               </div>
               <h1 className="text-7xl md:text-[120px] font-serif tracking-tightest leading-[0.85] mb-8 text-brand-charcoal">
                 The <br /><span className="serif-display text-gray-300 italic">Dinner Club</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-500 leading-tight font-light max-w-lg text-balance">
-                Curated evenings at Newcastle’s most interesting venues. Small group dining for the curious and the connected.
+                Nothing locked in yet. Be the first to know when we announce the next one.
               </p>
               <p className="text-base text-gray-500 font-light max-w-lg text-balance mt-6">
-                Dinner Club is in its early stages — we're building the waitlist and waiting for sign-ups and numbers before we lock in dates and venues. Join the registry below to be first in line when we launch.
+                We are between event drops right now. Join the notify list below and we will send details as soon as the next Dinner Club or experience is announced.
               </p>
               <a
-                href="#request-access"
+                href="#notify-list"
                 className="inline-flex items-center mt-8 bg-brand-charcoal text-white px-8 py-5 rounded-full text-xs uppercase tracking-widest font-bold hover:scale-105 transition-transform active:scale-95 shadow-lg shadow-black/5"
               >
-                Request access
+                Get notified
                 <ArrowRight size={14} className="ml-3" />
               </a>
             </div>
@@ -57,41 +55,45 @@ const Dinners: React.FC = () => {
                   className="w-full h-full object-cover grayscale-[0.2] contrast-[1.05]"
                 />
                 <div className="absolute bottom-6 right-6 bg-brand-paper/90 backdrop-blur px-4 py-2 border border-soft">
-                  <span className="text-[9px] uppercase tracking-widest font-black text-brand-charcoal">Waitlist Only</span>
+                  <span className="text-[9px] uppercase tracking-widest font-black text-brand-charcoal">No Upcoming Dates</span>
                 </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* First Dinner Club – 9 April */}
-        <Link
-          to="/dinner-club/april-9"
-          className="block mb-24 p-8 md:p-10 bg-brand-charcoal text-white rounded-2xl group hover:bg-brand-ink transition-colors shadow-xl shadow-black/10"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div>
-              <span className="text-[10px] uppercase tracking-widest font-black text-white/60 mb-2 block">First Dinner Club</span>
-              <h2 className="text-3xl md:text-4xl font-serif tracking-tight italic mb-2">9 April · Parry Street Garage</h2>
-              <p className="text-white/80 font-light text-sm md:text-base">Limited to first 30 people. Book your seat.</p>
+        <section className="mb-24">
+          <div className="border-t border-soft pt-10">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400">Past Events</span>
+              <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Archive</span>
             </div>
-            <span className="inline-flex items-center font-bold text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-              Book your seat
-              <ArrowRight size={16} className="ml-2" />
-            </span>
+            <div className="p-8 md:p-10 bg-brand-charcoal text-white rounded-2xl shadow-xl shadow-black/10">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div>
+                  <span className="text-[10px] uppercase tracking-widest font-black text-white/60 mb-2 block">Dinner Club #1</span>
+                  <h2 className="text-3xl md:text-4xl font-serif tracking-tight italic mb-2">9 April · Parry Street Garage</h2>
+                  <p className="text-white/80 font-light text-sm md:text-base">
+                    A curated 30-person dinner for local connection, conversation, and community.
+                  </p>
+                </div>
+                <span className="inline-flex items-center justify-center bg-white/10 border border-white/20 text-white px-4 py-2 rounded-full text-[10px] uppercase tracking-widest font-black">
+                  Completed
+                </span>
+              </div>
+            </div>
           </div>
-        </Link>
+        </section>
 
         <div className="grid md:grid-cols-12 gap-12 lg:gap-24 items-start mb-32">
-          {/* Left Column: Process */}
           <div className="md:col-span-5 space-y-20">
             <div className="space-y-12">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block border-b border-soft pb-4">The Format</span>
+              <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block border-b border-soft pb-4">What Happens Next</span>
               <div className="space-y-12">
                 {[
-                  { title: "The Registry", text: "Join the waitlist to receive private invitations. We release new dates monthly to early members." },
-                  { title: "The Invitation", text: "Receive a direct link to book your seat. No public tickets, ever." },
-                  { title: "The Curation", text: "A brief matching process ensures every table is matched for genuine connection." }
+                  { title: 'Join The Notify List', text: 'Add your email once and we will alert you when the next Dinner Club date is locked in.' },
+                  { title: 'Get Early Notice', text: 'You will be first to hear about new experiences before broader promotion.' },
+                  { title: 'Book When Announced', text: 'Once details are confirmed, we will share timing and booking instructions directly.' }
                 ].map((step, idx) => (
                   <div key={idx} className="group space-y-4">
                     <div className="flex items-center space-x-4">
@@ -108,7 +110,6 @@ const Dinners: React.FC = () => {
               "Providing the structure & curation, so you can just provide the presence."
             </div>
 
-            {/* Dinner Club FAQs */}
             <div className="space-y-6 pt-8 border-t border-soft">
               <span className="text-[10px] uppercase tracking-[0.25em] font-black text-gray-400 block pb-4">Dinner Club FAQ</span>
               {DINNER_CLUB_FAQS.map((item, index) => (
@@ -117,6 +118,7 @@ const Dinners: React.FC = () => {
                   className={`border-b border-soft transition-all duration-500 overflow-hidden ${openFaqIndex === index ? 'pb-6' : 'pb-4'}`}
                 >
                   <button
+                    type="button"
                     onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
                     className="w-full text-left py-3 flex items-center justify-between group"
                   >
@@ -139,25 +141,23 @@ const Dinners: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Integrated Form */}
-          <div id="request-access" className="md:col-span-7 sticky top-32 scroll-mt-32">
+          <div id="notify-list" className="md:col-span-7 sticky top-32 scroll-mt-32">
             <div className="bg-brand-paper border border-soft p-10 md:p-16 shadow-xl shadow-brand-charcoal/[0.03] relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-brand-charcoal"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-brand-charcoal" />
 
               <div className="mb-10 flex items-baseline justify-between">
                 <div>
-                  <h3 className="text-4xl font-serif mb-2 italic text-brand-charcoal">Request Access</h3>
-                  <p className="text-gray-400 font-light text-sm">Invitations are released in sequential order.</p>
+                  <h3 className="text-4xl font-serif mb-2 italic text-brand-charcoal">Be First To Know</h3>
+                  <p className="text-gray-400 font-light text-sm">Nothing locked in yet. Join for next-event announcements.</p>
                 </div>
                 <Lock size={24} className="text-gray-200" />
               </div>
 
-              {/* Form Container */}
-              <div className="hs-form-frame w-full min-h-[400px]" data-region="ap1" data-form-id="49d841f3-2eaa-4e92-acf5-77c66c64ec93" data-portal-id="442301086"></div>
+              <div className="hs-form-frame w-full min-h-[400px]" data-region="ap1" data-form-id="49d841f3-2eaa-4e92-acf5-77c66c64ec93" data-portal-id="442301086" />
 
               <div className="mt-12 pt-8 border-t border-soft">
                 <p className="text-[9px] uppercase tracking-widest font-bold text-gray-300 leading-relaxed">
-                  Privacy is paramount. Your registration grants you early access to private bookings across the Digest network.
+                  Privacy is paramount. We will only email you about newly announced Dinner Club events and experiences.
                 </p>
               </div>
             </div>
